@@ -401,21 +401,31 @@ body {
 .mini-btn.ghost { background: transparent; }
 
 .row-btn {
-  width: 34px;
-  height: 22px;
-  font-size: 12px;
+  width: 76px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 0 6px;
+  font-size: 9px;
   font-weight: 700;
+  letter-spacing: .6px;
   background: var(--panel2);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 7px;
   cursor: pointer;
   line-height: 1;
-  padding: 0;
+}
+.row-btn img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  pointer-events: none;
 }
 .row-btn:active { background: var(--line); }
 .row-btn.reroll { color: #ffd866; }
-.row-btn.pool   { color: #9ecbff; font-size: 8px; letter-spacing: .4px; }
 .row-btn.del    { color: #ff9c9c; }
 
 /* ---------- cup ---------- */
@@ -512,8 +522,8 @@ body {
 .player.compact .row-label { width: 38px; }
 .player.compact .row-label .face-num { font-size: 14px; }
 .player.compact .row-label .face-count { font-size: 12px; }
-.player.compact .row-btn { width: 28px; height: 18px; font-size: 10px; }
-.player.compact .row-btn.pool { font-size: 7px; }
+.player.compact .row-btn { width: 58px; height: 22px; font-size: 7px; gap: 3px; padding: 0 4px; }
+.player.compact .row-btn img { width: 14px; height: 14px; }
 .player.compact .cup-status .mini-btn { padding: 4px 7px; font-size: 10px; }
 
 /* ---------- settings modal ---------- */

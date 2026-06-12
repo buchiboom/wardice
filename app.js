@@ -166,8 +166,10 @@ function createPlayer(root, name) {
         const actions = document.createElement('div');
         actions.className = 'row-actions';
         actions.innerHTML = `
-          <button class="row-btn reroll" data-act="reroll" title="Re-roll all ${v}s">↻</button>
-          <button class="row-btn del" data-act="del" title="Delete all ${v}s">✕</button>`;
+          <button class="row-btn reroll" data-act="reroll" title="Re-roll all ${v}s">
+            <img src="icons/reroll.webp" alt="">REROLL</button>
+          <button class="row-btn del" data-act="del" title="Remove all ${v}s">
+            <img src="icons/remove.webp" alt="">REMOVE</button>`;
         row.appendChild(actions);
       }
       resultsEl.appendChild(row);
@@ -206,7 +208,7 @@ function createPlayer(root, name) {
 
     totalEl.innerHTML = state.dice.length > 0
       ? `RESULT <b>${state.dice.length}</b> DICE`
-      : 'FILL CUP & ROLL';
+      : '';
 
     // side pool
     poolSection.hidden = state.pool.length === 0;
