@@ -52,6 +52,10 @@ body {
 }
 .topbar h1 span { color: var(--gold); }
 .topbar .spacer { flex: 1; }
+.status-slot { display: flex; align-items: center; }
+.topbar .cup-status { gap: 10px; }
+.topbar .ptotal { flex: 0 0 auto; text-align: right; }
+.topbar .pname { display: none; }
 
 /* ---------- board: 1-4 player grid ---------- */
 .board {
@@ -240,9 +244,22 @@ body {
   align-items: center;
   justify-content: center;
   width: 48px;
+  margin: -3px 0 -3px -6px;
+  padding: 3px 6px;
   border-right: 1px solid var(--line);
-  padding-right: 6px;
+  border-radius: 9px 0 0 9px;
   gap: 1px;
+  background: var(--panel2);
+  cursor: pointer;
+  user-select: none;
+}
+.value-row:not(.empty) .row-label:active { background: var(--line); }
+.value-row.empty .row-label { cursor: default; background: transparent; }
+.pool-hint {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #9ecbff;
 }
 .row-label .face-num {
   font-size: 18px;

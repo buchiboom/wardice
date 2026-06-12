@@ -152,7 +152,9 @@ function createPlayer(root, name) {
 
       const label = document.createElement('div');
       label.className = 'row-label';
-      label.innerHTML = `<div class="face-num">${v}</div><div class="face-count">×${n}</div>`;
+      label.title = `Move all ${v}s to side pool`;
+      label.innerHTML = `<div class="face-num">${v}</div><div class="face-count">×${n}</div>`
+        + (n > 0 ? '<div class="pool-hint">POOL</div>' : '');
       row.appendChild(label);
 
       const diceWrap = document.createElement('div');
@@ -165,7 +167,6 @@ function createPlayer(root, name) {
         actions.className = 'row-actions';
         actions.innerHTML = `
           <button class="row-btn reroll" data-act="reroll" title="Re-roll all ${v}s">↻</button>
-          <button class="row-btn pool" data-act="pool" title="Move all ${v}s to side pool">POOL</button>
           <button class="row-btn del" data-act="del" title="Delete all ${v}s">✕</button>`;
         row.appendChild(actions);
       }
@@ -298,8 +299,13 @@ function createPlayer(root, name) {
       const v = parseInt(btn.closest('.value-row').dataset.value, 10);
       const ids = idsOfValue(v);
       if (btn.dataset.act === 'reroll') rerollDice(ids);
-      else if (btn.dataset.act === 'pool') poolDice(ids);
       else if (btn.dataset.act === 'del') deleteDice(ids);
+      return;
+    }
+    const label = e.target.closest('.row-label');
+    if (label) {
+      const v = parseInt(label.closest('.value-row').dataset.value, 10);
+      poolDice(idsOfValue(v));   // face number doubles as the POOL button
       return;
     }
     const die = e.target.closest('.die');
@@ -365,12 +371,15 @@ function buildBoard() {
   const n = settings.tablet === 'on' ? parseInt(settings.players, 10) : 1;
   board.className = 'board players-' + n;
   board.replaceChildren();
+  document.getElementById('statusSlot').replaceChildren();
   players = [];
   for (let i = 1; i <= n; i++) {
     const node = playerTpl.content.firstElementChild.cloneNode(true);
     board.appendChild(node);
     players.push(createPlayer(node, 'P' + i));
   }
+  // single player: result + undo live up in the WARDICE bar
+  if (n === 1) document.getElementById('statusSlot').appendChild(board.querySelector('.cup-status'));
 }
 
 function syncSettingsUI() {
