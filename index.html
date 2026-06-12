@@ -16,48 +16,89 @@
 <body>
   <header class="topbar">
     <h1>WAR<span>DICE</span></h1>
-    <div class="result-total" id="resultTotal">—</div>
-    <button class="mini-btn" id="undoBtn" disabled>↶ UNDO</button>
+    <div class="spacer"></div>
+    <button class="mini-btn" id="settingsBtn">⚙ SETTINGS</button>
   </header>
 
-  <main id="results" class="results">
-    <!-- value rows injected here -->
-  </main>
+  <div id="board" class="board players-1"></div>
 
-  <section class="sidepool" id="sidepoolSection" hidden>
-    <div class="sidepool-head">
-      <span>SIDE POOL <b id="poolCount">0</b></span>
-      <div class="sidepool-actions">
-        <button class="mini-btn" id="poolReturnAll">RETURN ALL</button>
-        <button class="mini-btn danger" id="poolClear">CLEAR</button>
+  <template id="playerTpl">
+    <section class="player">
+      <div class="phead">
+        <span class="pname"></span>
+        <span class="ptotal">FILL CUP &amp; ROLL</span>
+        <button class="mini-btn undo" disabled>↶ UNDO</button>
       </div>
-    </div>
-    <div class="dice-strip" id="poolDice"></div>
-  </section>
+      <div class="pbody">
+        <main class="results"></main>
+        <div class="pside">
+          <section class="sidepool" hidden>
+            <div class="sidepool-head">
+              <span>SIDE POOL <b class="pool-count">0</b></span>
+              <div class="sidepool-actions">
+                <button class="mini-btn pool-return">RETURN ALL</button>
+                <button class="mini-btn danger pool-clear">CLEAR</button>
+              </div>
+            </div>
+            <div class="dice-strip pool-dice"></div>
+          </section>
+          <div class="select-bar" hidden>
+            <span class="select-count">0 SELECTED</span>
+            <button class="mini-btn sel-reroll">REROLL</button>
+            <button class="mini-btn sel-pool">POOL</button>
+            <button class="mini-btn danger sel-delete">DELETE</button>
+            <button class="mini-btn ghost sel-cancel">✕</button>
+          </div>
+          <footer class="cup">
+            <div class="cup-row">
+              <button class="cup-btn" data-add="-10">−10</button>
+              <button class="cup-btn" data-add="-1">−1</button>
+              <div class="cup-count">0</div>
+              <button class="cup-btn" data-add="1">+1</button>
+              <button class="cup-btn" data-add="10">+10</button>
+              <button class="cup-btn" data-add="50">+50</button>
+            </div>
+            <div class="cup-row main-actions">
+              <button class="ghost-btn cup-clear">CLEAR</button>
+              <button class="roll-btn" disabled>ROLL</button>
+              <button class="ghost-btn roll-again" disabled>AGAIN<small></small></button>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </section>
+  </template>
 
-  <div class="select-bar" id="selectBar" hidden>
-    <span id="selectCount">0 selected</span>
-    <button class="mini-btn" id="selReroll">REROLL</button>
-    <button class="mini-btn" id="selPool">POOL</button>
-    <button class="mini-btn danger" id="selDelete">DELETE</button>
-    <button class="mini-btn ghost" id="selCancel">✕</button>
+  <div class="modal-backdrop" id="settingsModal" hidden>
+    <div class="modal">
+      <h2>SETTINGS</h2>
+      <div class="setting">
+        <label>ORIENTATION</label>
+        <div class="seg" data-setting="orientation">
+          <button data-val="portrait">PORTRAIT</button>
+          <button data-val="landscape">LANDSCAPE</button>
+          <button data-val="auto">AUTO</button>
+        </div>
+      </div>
+      <div class="setting">
+        <label>TABLET MODE — SPLIT BOARD</label>
+        <div class="seg" data-setting="tablet">
+          <button data-val="off">OFF</button>
+          <button data-val="on">ON</button>
+        </div>
+      </div>
+      <div class="setting" id="playersSetting" hidden>
+        <label>PLAYERS</label>
+        <div class="seg" data-setting="players">
+          <button data-val="2">2</button>
+          <button data-val="3">3</button>
+          <button data-val="4">4</button>
+        </div>
+      </div>
+      <p class="hint">Orientation lock applies in the installed app. Tablet mode splits the screen into 2–4 boards — players across the table get a flipped board facing them.</p>
+      <button class="modal-done" id="settingsClose">DONE</button>
+    </div>
   </div>
-
-  <footer class="cup">
-    <div class="cup-row">
-      <button class="cup-btn" data-add="-10">−10</button>
-      <button class="cup-btn" data-add="-1">−1</button>
-      <div class="cup-count" id="cupCount">0</div>
-      <button class="cup-btn" data-add="1">+1</button>
-      <button class="cup-btn" data-add="10">+10</button>
-      <button class="cup-btn wide" data-add="50">+50</button>
-    </div>
-    <div class="cup-row main-actions">
-      <button class="ghost-btn" id="cupClear">CLEAR</button>
-      <button class="roll-btn" id="rollBtn" disabled>ROLL</button>
-      <button class="ghost-btn" id="rollAgain" disabled>AGAIN<small id="againCount"></small></button>
-    </div>
-  </footer>
 
   <script src="app.js"></script>
 </body>
