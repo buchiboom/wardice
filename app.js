@@ -36,7 +36,7 @@ function rollD6(count) {
 /* ============================================================
    Settings
    ============================================================ */
-const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on' };
+const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on', theme: 'default' };
 let settings = { ...DEFAULT_SETTINGS };
 try {
   settings = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem('wardice-settings') || '{}') };
@@ -44,6 +44,66 @@ try {
 
 function saveSettings() {
   try { localStorage.setItem('wardice-settings', JSON.stringify(settings)); } catch {}
+}
+
+/* ============================================================
+   Color schemes — 26 Warhammer 40k factions + default
+   accent = faction armor color · bg = dark board tint
+   die/pip override the dice face when a faction calls for it
+   ============================================================ */
+const THEMES = [
+  { id: 'default',     name: 'WarDice (Default)',    accent: '#c9a227', bg: '#0d0f12' },
+  { id: 'ultramar',    name: 'Ultramarines',         accent: '#4a7bd0', bg: '#090e1c' },
+  { id: 'bloodangels', name: 'Blood Angels',         accent: '#c43c3c', bg: '#160a0a' },
+  { id: 'darkangels',  name: 'Dark Angels',          accent: '#2a8a57', bg: '#07120c', die: '#ece5cb' },
+  { id: 'fists',       name: 'Imperial Fists',       accent: '#e8c11c', bg: '#14110a', pip: '#2b2410' },
+  { id: 'salamanders', name: 'Salamanders',          accent: '#34a853', bg: '#081207' },
+  { id: 'ravenguard',  name: 'Raven Guard',          accent: '#9aa3ad', bg: '#0a0a0c' },
+  { id: 'whitescars',  name: 'White Scars',          accent: '#e8e8e8', bg: '#101012', pip: '#a02020' },
+  { id: 'ironhands',   name: 'Iron Hands',           accent: '#8c9296', bg: '#0c0d0e', die: '#d7dade' },
+  { id: 'spacewolves', name: 'Space Wolves',         accent: '#7da0b8', bg: '#0d1318' },
+  { id: 'templars',    name: 'Black Templars',       accent: '#cfcfc6', bg: '#08080a', pip: '#8c1d1d' },
+  { id: 'greyknights', name: 'Grey Knights',         accent: '#aeb9c4', bg: '#0d1014', die: '#dde3e9' },
+  { id: 'deathwatch',  name: 'Deathwatch',           accent: '#b0b8c4', bg: '#09090b', pip: '#7a1f1f' },
+  { id: 'sororitas',   name: 'Adepta Sororitas',     accent: '#c02438', bg: '#0e0a0c', die: '#f2eee6' },
+  { id: 'militarum',   name: 'Astra Militarum',      accent: '#9aa050', bg: '#0e0f08', die: '#e3e0c4' },
+  { id: 'mechanicus',  name: 'Adeptus Mechanicus',   accent: '#c04a2e', bg: '#120b08', pip: '#3a241c' },
+  { id: 'custodes',    name: 'Adeptus Custodes',     accent: '#d4af37', bg: '#12100a' },
+  { id: 'blacklegion', name: 'Black Legion',         accent: '#b89b32', bg: '#0a090c' },
+  { id: 'deathguard',  name: 'Death Guard',          accent: '#8a9c45', bg: '#0e1009', die: '#dde0c0', pip: '#4a3a1f' },
+  { id: 'tsons',       name: 'Thousand Sons',        accent: '#2f8fc5', bg: '#081018', die: '#e9e2c8', pip: '#1c3a5e' },
+  { id: 'worldeaters', name: 'World Eaters',         accent: '#c03028', bg: '#120808', pip: '#5e1a14' },
+  { id: 'emperors',    name: "Emperor's Children",   accent: '#9b4fc0', bg: '#100818' },
+  { id: 'necrons',     name: 'Necrons',              accent: '#46d68a', bg: '#0a1210', die: '#c8d2cc', pip: '#0f3528' },
+  { id: 'orks',        name: 'Orks',                 accent: '#5fae35', bg: '#0c1208', die: '#e8e3c8', pip: '#20330f' },
+  { id: 'aeldari',     name: 'Aeldari',              accent: '#3fb5c4', bg: '#0a1216', die: '#e9e9e0' },
+  { id: 'tau',         name: "T'au Empire",          accent: '#d8a25a', bg: '#14100b', die: '#efe6d2' },
+  { id: 'tyranids',    name: 'Tyranids',             accent: '#b54a8f', bg: '#120a14', die: '#e8dcc8', pip: '#4a1f3a' },
+];
+
+// mix two hex colors: t=0 -> a, t=1 -> b
+function mix(a, b, t) {
+  const pa = a.match(/\w\w/g).map(x => parseInt(x, 16));
+  const pb = b.match(/\w\w/g).map(x => parseInt(x, 16));
+  return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * t).toString(16).padStart(2, '0')).join('');
+}
+
+function applyTheme() {
+  const t = THEMES.find(x => x.id === settings.theme) || THEMES[0];
+  const r = document.documentElement.style;
+  r.setProperty('--gold', t.accent);
+  r.setProperty('--gold-dim', mix(t.accent, '#000000', 0.35));
+  r.setProperty('--bg', t.bg);
+  r.setProperty('--panel', mix(t.bg, '#ffffff', 0.04));
+  r.setProperty('--panel2', mix(t.bg, '#ffffff', 0.09));
+  r.setProperty('--line', mix(t.bg, '#ffffff', 0.16));
+  r.setProperty('--die-face', t.die || '#f0ead6');
+  r.setProperty('--die-pip', t.pip || '#17191d');
+  r.setProperty('--accent-grad-a', mix(t.accent, '#ffffff', 0.10));
+  r.setProperty('--accent-grad-b', mix(t.accent, '#000000', 0.25));
+  r.setProperty('--accent-edge', mix(t.accent, '#000000', 0.60));
+  r.setProperty('--accent-text', mix(t.accent, '#000000', 0.85));
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', t.bg);
 }
 
 /* ---------- dice roll sound (generated with ludo.ai) ---------- */
@@ -389,12 +449,26 @@ function buildBoard() {
   if (n === 1) document.getElementById('statusSlot').appendChild(board.querySelector('.cup-status'));
 }
 
+const themeSelect = document.getElementById('themeSelect');
+for (const t of THEMES) {
+  const opt = document.createElement('option');
+  opt.value = t.id;
+  opt.textContent = t.name;
+  themeSelect.appendChild(opt);
+}
+themeSelect.addEventListener('change', () => {
+  settings.theme = themeSelect.value;
+  saveSettings();
+  applyTheme();
+});
+
 function syncSettingsUI() {
   settingsModal.querySelectorAll('.seg').forEach(seg => {
     const key = seg.dataset.setting;
     seg.querySelectorAll('button').forEach(btn =>
       btn.classList.toggle('active', btn.dataset.val === settings[key]));
   });
+  themeSelect.value = settings.theme;
   document.getElementById('playersSetting').hidden = settings.tablet !== 'on';
 }
 
@@ -425,5 +499,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+applyTheme();
 buildBoard();
 applyOrientation();

@@ -113,11 +113,14 @@ body {
   background: transparent;
   border: none;
   color: var(--gold);
-  font-size: 19px;
-  line-height: 1;
-  padding: 2px 6px;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  margin-right: -4px;
   cursor: pointer;
 }
+.gear-btn svg { width: 19px; height: 19px; }
+.gear-btn:active svg { transform: rotate(45deg); }
 
 /* ---------- player body: portrait column / wide row ---------- */
 .pbody {
@@ -410,7 +413,7 @@ body {
   justify-content: center;
   gap: 3px;
   padding: 3px;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
   letter-spacing: .5px;
   background: var(--panel2);
@@ -426,7 +429,7 @@ body {
   pointer-events: none;
 }
 .row-btn:active { background: var(--line); }
-.row-btn.reroll { color: #ffd866; }
+.row-btn.reroll { color: var(--gold); }
 .row-btn.del    { color: #ff9c9c; }
 
 /* ---------- cup ---------- */
@@ -477,14 +480,14 @@ body {
   font-size: 18px;
   font-weight: 800;
   letter-spacing: 4px;
-  color: #1a1505;
-  background: linear-gradient(180deg, #e0b62e, #a9871c);
-  border: 1px solid #5e4b10;
+  color: var(--accent-text, #1a1505);
+  background: linear-gradient(180deg, var(--accent-grad-a, #e0b62e), var(--accent-grad-b, #a9871c));
+  border: 1px solid var(--accent-edge, #5e4b10);
   border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 3px 0 #5e4b10;
+  box-shadow: 0 3px 0 var(--accent-edge, #5e4b10);
 }
-.roll-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #5e4b10; }
+.roll-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--accent-edge, #5e4b10); }
 .roll-btn:disabled {
   background: var(--panel2);
   color: var(--muted);
@@ -575,8 +578,18 @@ body {
 }
 .seg button.active {
   background: var(--gold);
-  color: #1a1505;
+  color: var(--accent-text, #1a1505);
   border-color: var(--gold);
+}
+.theme-select {
+  height: 38px;
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 8px;
 }
 .hint {
   margin: 0;
@@ -589,9 +602,9 @@ body {
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 3px;
-  color: #1a1505;
-  background: linear-gradient(180deg, #e0b62e, #a9871c);
-  border: 1px solid #5e4b10;
+  color: var(--accent-text, #1a1505);
+  background: linear-gradient(180deg, var(--accent-grad-a, #e0b62e), var(--accent-grad-b, #a9871c));
+  border: 1px solid var(--accent-edge, #5e4b10);
   border-radius: 10px;
   cursor: pointer;
 }
