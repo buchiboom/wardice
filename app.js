@@ -6,7 +6,7 @@
    ============================================================ */
 
 const MAX_DICE = 1000;          // hard cap per cup
-const MAX_GLYPHS = 80;          // absolute max die glyphs per row (perf)
+const ROW_CAP = 12;             // max die glyphs per row: 6 wide x 2 lines
 const UNDO_DEPTH = 30;
 const DIE_SIZES = [34, 30, 26, 22, 18, 14];  // shrink-to-fit ladder
 const GAP = 4;                  // matches .row-dice gap
@@ -170,10 +170,10 @@ function createPlayer(root, name) {
     };
     let die = DIE_SIZES[DIE_SIZES.length - 1];
     for (const s of DIE_SIZES) {
-      if (s <= rect.height && maxGroup <= capOf(s)) { die = s; break; }
+      if (s <= rect.height && Math.min(maxGroup, ROW_CAP) <= capOf(s)) { die = s; break; }
     }
     if (die > rect.height) die = Math.max(10, Math.floor(rect.height)); // ultra-short rows
-    const capacity = Math.min(MAX_GLYPHS, capOf(die));
+    const capacity = Math.min(ROW_CAP, capOf(die));
     resultsEl.style.setProperty('--die-size', die + 'px');
 
     // pass 3: fill dice, collapsing the tail into a "+N" tile when needed

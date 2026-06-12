@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'wardice-v3';
+const CACHE = 'wardice-v4';
 const ASSETS = [
   './',
   './index.html',
