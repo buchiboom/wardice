@@ -167,9 +167,11 @@ function createPlayer(root, name) {
         actions.className = 'row-actions';
         actions.innerHTML = `
           <button class="row-btn reroll" data-act="reroll" title="Re-roll all ${v}s">
-            <img src="icons/reroll.webp" alt="">REROLL</button>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+            REROLL</button>
           <button class="row-btn del" data-act="del" title="Remove all ${v}s">
-            <img src="icons/remove.webp" alt="">REMOVE</button>`;
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
+            REMOVE</button>`;
         row.appendChild(actions);
       }
       resultsEl.appendChild(row);
@@ -189,6 +191,9 @@ function createPlayer(root, name) {
     if (die > rect.height) die = Math.max(10, Math.floor(rect.height)); // ultra-short rows
     const capacity = Math.min(ROW_CAP, capOf(die));
     resultsEl.style.setProperty('--die-size', die + 'px');
+    // square action buttons: two of them split the row height
+    const btn = Math.max(20, Math.min(48, Math.floor((rect.height - 4) / 2)));
+    resultsEl.style.setProperty('--btn-size', btn + 'px');
 
     // pass 3: fill dice, collapsing the tail into a "+N" tile when needed
     for (let v = 6; v >= 1; v--) {

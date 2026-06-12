@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'wardice-v9';
+const CACHE = 'wardice-v10';
 const ASSETS = [
   './',
   './index.html',
@@ -9,8 +9,6 @@ const ASSETS = [
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/reroll.webp',
-  './icons/remove.webp',
   './sounds/roll.mp3',
 ];
 
