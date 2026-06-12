@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#0d0f12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>WarDice — Battle Dice Roller</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>WAR<span>DICE</span></h1>
+    <div class="result-total" id="resultTotal">—</div>
+  </header>
+
+  <main id="results" class="results">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-die"></div>
+      <p>Fill the cup below, then ROLL.</p>
+    </div>
+    <!-- value rows injected here -->
+  </main>
+
+  <section class="sidepool" id="sidepoolSection" hidden>
+    <div class="sidepool-head">
+      <span>SIDE POOL <b id="poolCount">0</b></span>
+      <div class="sidepool-actions">
+        <button class="mini-btn" id="poolReturnAll">RETURN ALL</button>
+        <button class="mini-btn danger" id="poolClear">CLEAR</button>
+      </div>
+    </div>
+    <div class="dice-strip" id="poolDice"></div>
+  </section>
+
+  <div class="select-bar" id="selectBar" hidden>
+    <span id="selectCount">0 selected</span>
+    <button class="mini-btn" id="selReroll">REROLL</button>
+    <button class="mini-btn" id="selPool">POOL</button>
+    <button class="mini-btn danger" id="selDelete">DELETE</button>
+    <button class="mini-btn ghost" id="selCancel">✕</button>
+  </div>
+
+  <footer class="cup">
+    <div class="cup-row">
+      <button class="cup-btn" data-add="-10">−10</button>
+      <button class="cup-btn" data-add="-1">−1</button>
+      <div class="cup-count" id="cupCount">0</div>
+      <button class="cup-btn" data-add="1">+1</button>
+      <button class="cup-btn" data-add="10">+10</button>
+      <button class="cup-btn wide" data-add="50">+50</button>
+    </div>
+    <div class="cup-row main-actions">
+      <button class="ghost-btn" id="cupClear">CLEAR</button>
+      <button class="roll-btn" id="rollBtn" disabled>ROLL</button>
+      <button class="ghost-btn" id="rollAgain" disabled>AGAIN<small id="againCount"></small></button>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
