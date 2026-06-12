@@ -84,15 +84,11 @@ body {
 }
 .players-1 .player { border: none; border-radius: 0; }
 
-/* ---------- per-player header ---------- */
-.phead {
-  flex: 0 0 auto;
+/* ---------- per-player status (lives inside the cup footer) ---------- */
+.cup-status {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 10px;
-  border-bottom: 1px solid var(--line);
-  background: var(--panel);
 }
 .pname {
   font-size: 12px;
@@ -103,12 +99,21 @@ body {
 .players-1 .pname { display: none; }
 .ptotal {
   flex: 1;
-  text-align: right;
+  text-align: left;
   font-size: 12px;
   color: var(--muted);
   letter-spacing: 1px;
 }
 .ptotal b { color: var(--gold); font-size: 14px; }
+.gear-btn {
+  background: transparent;
+  border: none;
+  color: var(--gold);
+  font-size: 19px;
+  line-height: 1;
+  padding: 2px 6px;
+  cursor: pointer;
+}
 
 /* ---------- player body: portrait column / wide row ---------- */
 .pbody {
@@ -120,11 +125,11 @@ body {
 .pbody.wide { flex-direction: row; }
 .pbody.wide .pside {
   flex: 0 0 auto;
-  width: min(44%, 330px);
+  width: min(42%, 310px);
   border-left: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   min-height: 0;
 }
 .pbody.wide .cup { border-top: 1px solid var(--line); }
@@ -137,6 +142,46 @@ body {
   grid-template-columns: 1fr 1fr;
   grid-auto-flow: column;
 }
+
+/* landscape: side column fills the full height — status on top, cup grows */
+.pbody.wide .cup {
+  flex: 1 1 auto;
+  min-height: 0;
+  justify-content: flex-end;
+  gap: 7px;
+}
+.pbody.wide .cup-status { margin-bottom: auto; padding-bottom: 4px; }
+.pbody.wide .cup-row:not(.main-actions) {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: 110px;
+  gap: 6px;
+}
+.pbody.wide .cup-row:not(.main-actions) .cup-btn,
+.pbody.wide .cup-row:not(.main-actions) .cup-count {
+  height: 100%;
+  min-height: 40px;
+  font-size: 17px;
+}
+.pbody.wide .main-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1.2 1 0;
+  min-height: 0;
+  max-height: 160px;
+  gap: 6px;
+}
+.pbody.wide .main-actions .roll-btn {
+  grid-column: 1 / -1;
+  order: 1;
+  height: 100%;
+  min-height: 52px;
+  font-size: 22px;
+}
+.pbody.wide .main-actions .cup-clear { order: 2; height: 100%; min-height: 40px; }
+.pbody.wide .main-actions .roll-again { order: 3; height: 100%; min-height: 40px; }
 
 /* ---------- results: 6 fixed rows, never scrolls ---------- */
 .results {
@@ -363,7 +408,9 @@ body {
 .cup-btn:active { background: var(--line); }
 .cup-count {
   flex: 1.2;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 22px;
   font-weight: 800;
   color: var(--gold);
@@ -371,7 +418,6 @@ body {
   border: 1px solid var(--gold-dim);
   border-radius: 8px;
   height: 40px;
-  line-height: 38px;
 }
 .roll-btn {
   flex: 2.2;
@@ -419,7 +465,7 @@ body {
 
 /* compact panels (multi-player on small screens) */
 .player.compact .cup-btn { height: 30px; font-size: 12px; }
-.player.compact .cup-count { height: 30px; line-height: 28px; font-size: 16px; }
+.player.compact .cup-count { height: 30px; font-size: 16px; }
 .player.compact .roll-btn { height: 34px; font-size: 14px; letter-spacing: 2px; }
 .player.compact .ghost-btn { height: 34px; font-size: 9px; }
 .player.compact .row-label { width: 38px; }
@@ -427,7 +473,7 @@ body {
 .player.compact .row-label .face-count { font-size: 12px; }
 .player.compact .row-btn { width: 28px; height: 18px; font-size: 10px; }
 .player.compact .row-btn.pool { font-size: 7px; }
-.player.compact .phead { padding: 2px 8px; }
+.player.compact .cup-status .mini-btn { padding: 4px 7px; font-size: 10px; }
 
 /* ---------- settings modal ---------- */
 .modal-backdrop {
