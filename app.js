@@ -36,7 +36,7 @@ function rollD6(count) {
 /* ============================================================
    Settings
    ============================================================ */
-const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2' };
+const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on' };
 let settings = { ...DEFAULT_SETTINGS };
 try {
   settings = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem('wardice-settings') || '{}') };
@@ -44,6 +44,17 @@ try {
 
 function saveSettings() {
   try { localStorage.setItem('wardice-settings', JSON.stringify(settings)); } catch {}
+}
+
+/* ---------- dice roll sound (generated with ludo.ai) ---------- */
+const ROLL_SFX = new Audio('sounds/roll.mp3');
+ROLL_SFX.preload = 'auto';
+
+function playRollSound() {
+  if (settings.sound !== 'on') return;
+  const a = ROLL_SFX.cloneNode();   // clone so simultaneous players overlap cleanly
+  a.volume = 0.9;
+  a.play().catch(() => {});         // ignore autoplay rejections
 }
 
 async function applyOrientation() {
@@ -215,6 +226,7 @@ function createPlayer(root, name) {
 
   function animateRoll() {
     state.rolling = true;
+    playRollSound();
     render();
     resultsEl.classList.add('rolling');
     setTimeout(() => {

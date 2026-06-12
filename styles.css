@@ -183,6 +183,30 @@ body {
 .pbody.wide .main-actions .cup-clear { order: 2; height: 100%; min-height: 40px; }
 .pbody.wide .main-actions .roll-again { order: 3; height: 100%; min-height: 40px; }
 
+/* short wide panels (multi-player landscape): shrink the control column so
+   the grid rows never overflow into each other */
+.player.compact .pbody.wide .cup { gap: 4px; padding: 5px 8px; }
+.player.compact .pbody.wide .cup-status { padding-bottom: 2px; }
+.player.compact .pbody.wide .cup-row:not(.main-actions) {
+  max-height: 60px;
+  gap: 4px;
+}
+.player.compact .pbody.wide .cup-row:not(.main-actions) .cup-btn,
+.player.compact .pbody.wide .cup-row:not(.main-actions) .cup-count {
+  min-height: 22px;
+  font-size: 12px;
+}
+.player.compact .pbody.wide .main-actions { max-height: 84px; gap: 4px; }
+.player.compact .pbody.wide .main-actions .roll-btn {
+  min-height: 28px;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+.player.compact .pbody.wide .main-actions .cup-clear,
+.player.compact .pbody.wide .main-actions .roll-again {
+  min-height: 22px;
+}
+
 /* ---------- results: 6 fixed rows, never scrolls ---------- */
 .results {
   flex: 1 1 auto;

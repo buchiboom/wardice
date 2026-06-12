@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'wardice-v5';
+const CACHE = 'wardice-v6';
 const ASSETS = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const ASSETS = [
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
+  './sounds/roll.mp3',
 ];
 
 self.addEventListener('install', e => {
