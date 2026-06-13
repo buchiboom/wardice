@@ -170,7 +170,6 @@ function createPlayer(root, name) {
   const resultsEl = q('.results');
   const totalEl = q('.ptotal');
   const undoBtn = q('.undo');
-  const cupEl = q('.cup-count');
   const rollBtn = q('.roll-btn');
   const againBtn = q('.roll-again');
   const againCountEl = q('.roll-again small');
@@ -322,8 +321,8 @@ function createPlayer(root, name) {
       poolDiceEl.replaceChildren();
     }
 
-    // cup + buttons
-    cupEl.textContent = state.cup;
+    // cup + buttons — the ROLL button shows how many dice are queued
+    rollBtn.textContent = state.cup > 0 ? `ROLL ${state.cup}` : 'ROLL';
     rollBtn.disabled = state.cup === 0 || state.rolling;
     againBtn.disabled = state.lastRollCount === 0 || state.rolling;
     againCountEl.textContent = state.lastRollCount > 0 ? `×${state.lastRollCount}` : '';
@@ -396,6 +395,11 @@ function createPlayer(root, name) {
   root.querySelectorAll('.cup-btn').forEach(btn =>
     btn.addEventListener('click', () => addToCup(parseInt(btn.dataset.add, 10))));
 
+  q('.cup-empty').addEventListener('click', () => {   // zero just the pending cup
+    if (state.cup === 0) return;
+    state.cup = 0;
+    render();
+  });
   q('.cup-clear').addEventListener('click', () => {
     if (state.cup === 0 && state.dice.length === 0) return;
     pushUndo();

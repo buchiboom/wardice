@@ -4,7 +4,7 @@
 // release: the new SW precaches fresh copies (bypassing the HTTP cache via
 // cache:'reload'), drops old caches on activate, and the page auto-reloads.
 // No per-asset ?v= query strings to keep in sync.
-const CACHE = 'wardice-v17';
+const CACHE = 'wardice-v18';
 const ASSETS = [
   './',
   './index.html',
