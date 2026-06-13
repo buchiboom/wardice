@@ -6,7 +6,7 @@
    ============================================================ */
 
 const MAX_DICE = 1000;          // hard cap per cup
-const ROW_CAP = 14;             // max die glyphs shown per row (incl. the +N tile)
+const ROW_CAP = 12;             // max die glyphs shown per row: 6 wide x 2 lines (11 dice + "+N")
 const UNDO_DEPTH = 30;
 const DIE_SIZES = [34, 30, 26, 22, 18, 14];  // shrink-to-fit ladder
 const GAP = 4;                  // matches .row-dice gap
@@ -247,12 +247,22 @@ function createPlayer(root, name) {
     const perLineOf = s => Math.max(1, Math.floor((rect.width + GAP) / (s + GAP)));
     const linesOf = s => Math.max(1, Math.min(2, Math.floor((rect.height + GAP) / (s + GAP))));
     const capOf = s => Math.min(ROW_CAP, perLineOf(s) * linesOf(s));
-    let die = DIE_SIZES[0];           // big dice + "+N" tile when nothing fits all
+    // largest ladder size that shows every die of the busiest group
+    let die = 0;
     for (const s of DIE_SIZES) {
-      if (s <= rect.height && Math.min(maxGroup, ROW_CAP) <= capOf(s)) { die = s; break; }
+      if (s <= rect.height && maxGroup <= capOf(s)) { die = s; break; }
     }
-    if (die > rect.height) die = Math.max(10, Math.floor(rect.height)); // ultra-short rows
-    const capacity = capOf(die);
+    let capacity;
+    if (die) {
+      capacity = capOf(die);                 // everything fits — no "+N" tile
+    } else {
+      // overflow: show 11 dice + "+N" as a filled 6-wide x 2 grid, with the
+      // dice resized so those 12 tiles exactly fill the row
+      const dieW = Math.floor((rect.width + GAP) / 6) - GAP;
+      const dieH = Math.floor((rect.height + GAP) / 2) - GAP;
+      die = Math.max(10, Math.min(34, dieW, dieH));
+      capacity = ROW_CAP;
+    }
     resultsEl.style.setProperty('--die-size', die + 'px');
     // square action buttons: two of them split the row height
     const btn = Math.max(20, Math.min(48, Math.floor((rect.height - 4) / 2)));
