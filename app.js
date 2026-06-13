@@ -7,9 +7,16 @@
 
 const MAX_DICE = 1000;          // hard cap per cup
 const ROW_CAP = 12;             // max die glyphs shown per row: 6 wide x 2 lines (11 dice + "+N")
+const ROW_COLS = 6;             // dice per line when a row overflows
 const UNDO_DEPTH = 30;
 const DIE_SIZES = [34, 30, 26, 22, 18, 14];  // shrink-to-fit ladder
+const DIE_MIN = 10;             // smallest die when squeezing an overflow row
 const GAP = 4;                  // matches .row-dice gap
+const POOL_DIE_PITCH = 28;      // .dice-strip die (24px) + its 4px gap
+const ROLL_ANIM_MS = 430;       // matches the .rolling tumble animation
+const COMPACT_H = 520;          // panel shorter than this uses compact controls
+const COMPACT_W = 330;          // panel narrower than this uses compact controls
+const WIDE_RATIO = 1.15;        // pbody wider than tall*this -> landscape layout
 const PIP_CELLS = {             // 3x3 grid cells (1-9) used per face value
   1: [5],
   2: [3, 7],
@@ -18,6 +25,14 @@ const PIP_CELLS = {             // 3x3 grid cells (1-9) used per face value
   5: [1, 3, 5, 7, 9],
   6: [1, 3, 4, 6, 7, 9],
 };
+
+// the "+N not shown" tile, shared by the value rows and the side pool
+function overflowTile(n) {
+  const el = document.createElement('div');
+  el.className = 'die overflow';
+  el.textContent = `+${n}`;
+  return el;
+}
 
 /* ---------- unbiased d6 via crypto ---------- */
 function rollD6(count) {
@@ -81,10 +96,14 @@ const THEMES = [
   { id: 'tyranids',    name: 'Magenta · Tyranids',             accent: '#b54a8f', bg: '#120a14', die: '#e8dcc8', pip: '#4a1f3a' },
 ];
 
-// mix two hex colors: t=0 -> a, t=1 -> b
+// mix two hex colors: t=0 -> a, t=1 -> b (accepts #rgb or #rrggbb)
 function mix(a, b, t) {
-  const pa = a.match(/\w\w/g).map(x => parseInt(x, 16));
-  const pb = b.match(/\w\w/g).map(x => parseInt(x, 16));
+  const rgb = h => {
+    h = h.replace('#', '');
+    if (h.length === 3) h = h.split('').map(c => c + c).join('');
+    return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+  };
+  const pa = rgb(a), pb = rgb(b);
   return '#' + pa.map((v, i) => Math.round(v + (pb[i] - v) * t).toString(16).padStart(2, '0')).join('');
 }
 
@@ -107,14 +126,21 @@ function applyTheme() {
 }
 
 /* ---------- dice roll sound (generated with ludo.ai) ---------- */
-const ROLL_SFX = new Audio('sounds/roll.mp3');
-ROLL_SFX.preload = 'auto';
+// small fixed pool of reused players: simultaneous rolls overlap cleanly
+// without allocating (and leaking) a fresh Audio on every roll
+const SFX_POOL = Array.from({ length: 4 }, () => {
+  const a = new Audio('sounds/roll.mp3');
+  a.preload = 'auto';
+  a.volume = 0.9;
+  return a;
+});
+let sfxIdx = 0;
 
 function playRollSound() {
   if (settings.sound !== 'on') return;
-  const a = ROLL_SFX.cloneNode();   // clone so simultaneous players overlap cleanly
-  a.volume = 0.9;
-  a.play().catch(() => {});         // ignore autoplay rejections
+  const a = SFX_POOL[sfxIdx];
+  sfxIdx = (sfxIdx + 1) % SFX_POOL.length;
+  try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
 }
 
 async function applyOrientation() {
@@ -194,8 +220,8 @@ function createPlayer(root, name) {
      ladder so the busiest row shows as many real dice as possible. */
   function render() {
     // panel-shape classes (drives portrait/landscape layout + compact controls)
-    pbody.classList.toggle('wide', pbody.clientWidth > pbody.clientHeight * 1.15);
-    root.classList.toggle('compact', root.clientHeight < 520 || root.clientWidth < 330);
+    pbody.classList.toggle('wide', pbody.clientWidth > pbody.clientHeight * WIDE_RATIO);
+    root.classList.toggle('compact', root.clientHeight < COMPACT_H || root.clientWidth < COMPACT_W);
 
     const groups = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
     for (const d of state.dice) groups[d.value].push(d);
@@ -258,9 +284,9 @@ function createPlayer(root, name) {
     } else {
       // overflow: show 11 dice + "+N" as a filled 6-wide x 2 grid, with the
       // dice resized so those 12 tiles exactly fill the row
-      const dieW = Math.floor((rect.width + GAP) / 6) - GAP;
+      const dieW = Math.floor((rect.width + GAP) / ROW_COLS) - GAP;
       const dieH = Math.floor((rect.height + GAP) / 2) - GAP;
-      die = Math.max(10, Math.min(34, dieW, dieH));
+      die = Math.max(DIE_MIN, Math.min(DIE_SIZES[0], dieW, dieH));
       capacity = ROW_CAP;
     }
     resultsEl.style.setProperty('--die-size', die + 'px');
@@ -275,12 +301,7 @@ function createPlayer(root, name) {
       const shown = group.slice(0, group.length > capacity ? capacity - 1 : capacity);
       const frag = document.createDocumentFragment();
       for (const d of shown) frag.appendChild(dieEl(d));
-      if (group.length > shown.length) {
-        const more = document.createElement('div');
-        more.className = 'die overflow';
-        more.textContent = `+${group.length - shown.length}`;
-        frag.appendChild(more);
-      }
+      if (group.length > shown.length) frag.appendChild(overflowTile(group.length - shown.length));
       wraps[v].appendChild(frag);
     }
 
@@ -293,15 +314,10 @@ function createPlayer(root, name) {
     poolCountEl.textContent = state.pool.length;
     if (state.pool.length > 0) {
       const stripW = poolDiceEl.clientWidth || 300;
-      const poolCap = Math.max(1, Math.floor((stripW + 4) / 28)) * 2;
+      const poolCap = Math.max(1, Math.floor((stripW + GAP) / POOL_DIE_PITCH)) * 2;
       const shown = state.pool.slice(0, state.pool.length > poolCap ? poolCap - 1 : poolCap);
       poolDiceEl.replaceChildren(...shown.map(d => dieEl(d)));
-      if (state.pool.length > shown.length) {
-        const more = document.createElement('div');
-        more.className = 'die overflow';
-        more.textContent = `+${state.pool.length - shown.length}`;
-        poolDiceEl.appendChild(more);
-      }
+      if (state.pool.length > shown.length) poolDiceEl.appendChild(overflowTile(state.pool.length - shown.length));
     } else {
       poolDiceEl.replaceChildren();
     }
@@ -327,7 +343,7 @@ function createPlayer(root, name) {
       resultsEl.classList.remove('rolling');
       state.rolling = false;
       render();
-    }, 430);
+    }, ROLL_ANIM_MS);
   }
 
   function addToCup(n) {
@@ -450,23 +466,31 @@ function createPlayer(root, name) {
 
   // refit when this panel's size changes (rotation, split-board resize, …)
   let roTimer = null;
-  new ResizeObserver(() => {
+  const ro = new ResizeObserver(() => {
     clearTimeout(roTimer);
     roTimer = setTimeout(render, 80);
-  }).observe(pbody);
+  });
+  ro.observe(pbody);
 
   render();
   return {
     render,
     // snapshot/restore so a board rebuild (tablet toggle, player-count
-    // change) keeps each player's rolled dice instead of wiping them
-    snapshot: () => ({ dice: state.dice, pool: state.pool, cup: state.cup,
-                       lastRollCount: state.lastRollCount, nextId: state.nextId }),
+    // change) keeps each player's full state instead of wiping it
+    snapshot: () => ({
+      dice: state.dice, pool: state.pool, cup: state.cup,
+      lastRollCount: state.lastRollCount, nextId: state.nextId,
+      undo: undoStack.slice(), selected: [...state.selected],
+    }),
     restore: s => {
       state.dice = s.dice; state.pool = s.pool; state.cup = s.cup;
       state.lastRollCount = s.lastRollCount; state.nextId = s.nextId;
+      undoStack.length = 0;
+      if (s.undo) undoStack.push(...s.undo);
+      state.selected = new Set(s.selected || []);
       render();
     },
+    destroy: () => { clearTimeout(roTimer); ro.disconnect(); },
   };
 }
 
@@ -480,7 +504,8 @@ let players = [];
 
 function buildBoard() {
   const n = settings.tablet === 'on' ? parseInt(settings.players, 10) : 1;
-  const carried = players.map(p => p.snapshot());   // keep dice across rebuild
+  const carried = players.map(p => p.snapshot());   // keep state across rebuild
+  players.forEach(p => p.destroy());                // tear down old observers
   board.className = 'board players-' + n;
   board.replaceChildren();
   document.getElementById('statusSlot').replaceChildren();
@@ -492,12 +517,11 @@ function buildBoard() {
   }
   // single player: result + undo live up in the WARDICE bar
   if (n === 1) document.getElementById('statusSlot').appendChild(board.querySelector('.cup-status'));
-  // restore carried state by index, then refit once layout has settled so
+  // restore carried state synchronously (so a follow-up rebuild snapshots
+  // real state, not empty panels), then refit once layout has settled so
   // dice are measured against the final panel size (not a transient one)
-  requestAnimationFrame(() => {
-    players.forEach((p, i) => { if (carried[i]) p.restore(carried[i]); });
-    requestAnimationFrame(() => players.forEach(p => p.render()));
-  });
+  players.forEach((p, i) => { if (carried[i]) p.restore(carried[i]); });
+  requestAnimationFrame(() => players.forEach(p => p.render()));
 }
 
 const themeSelect = document.getElementById('themeSelect');
