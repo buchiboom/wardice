@@ -6,6 +6,7 @@
    ============================================================ */
 
 const MAX_DICE = 1000;          // hard cap per cup
+const ROW_CAP = 14;             // max die glyphs shown per row (incl. the +N tile)
 const UNDO_DEPTH = 30;
 const DIE_SIZES = [34, 30, 26, 22, 18, 14];  // shrink-to-fit ladder
 const GAP = 4;                  // matches .row-dice gap
@@ -245,10 +246,10 @@ function createPlayer(root, name) {
     // "+N not shown" counter when a group overflows
     const perLineOf = s => Math.max(1, Math.floor((rect.width + GAP) / (s + GAP)));
     const linesOf = s => Math.max(1, Math.min(2, Math.floor((rect.height + GAP) / (s + GAP))));
-    const capOf = s => perLineOf(s) * linesOf(s);
+    const capOf = s => Math.min(ROW_CAP, perLineOf(s) * linesOf(s));
     let die = DIE_SIZES[0];           // big dice + "+N" tile when nothing fits all
     for (const s of DIE_SIZES) {
-      if (s <= rect.height && maxGroup <= capOf(s)) { die = s; break; }
+      if (s <= rect.height && Math.min(maxGroup, ROW_CAP) <= capOf(s)) { die = s; break; }
     }
     if (die > rect.height) die = Math.max(10, Math.floor(rect.height)); // ultra-short rows
     const capacity = capOf(die);
@@ -445,7 +446,18 @@ function createPlayer(root, name) {
   }).observe(pbody);
 
   render();
-  return { render };
+  return {
+    render,
+    // snapshot/restore so a board rebuild (tablet toggle, player-count
+    // change) keeps each player's rolled dice instead of wiping them
+    snapshot: () => ({ dice: state.dice, pool: state.pool, cup: state.cup,
+                       lastRollCount: state.lastRollCount, nextId: state.nextId }),
+    restore: s => {
+      state.dice = s.dice; state.pool = s.pool; state.cup = s.cup;
+      state.lastRollCount = s.lastRollCount; state.nextId = s.nextId;
+      render();
+    },
+  };
 }
 
 /* ============================================================
@@ -458,6 +470,7 @@ let players = [];
 
 function buildBoard() {
   const n = settings.tablet === 'on' ? parseInt(settings.players, 10) : 1;
+  const carried = players.map(p => p.snapshot());   // keep dice across rebuild
   board.className = 'board players-' + n;
   board.replaceChildren();
   document.getElementById('statusSlot').replaceChildren();
@@ -469,6 +482,12 @@ function buildBoard() {
   }
   // single player: result + undo live up in the WARDICE bar
   if (n === 1) document.getElementById('statusSlot').appendChild(board.querySelector('.cup-status'));
+  // restore carried state by index, then refit once layout has settled so
+  // dice are measured against the final panel size (not a transient one)
+  requestAnimationFrame(() => {
+    players.forEach((p, i) => { if (carried[i]) p.restore(carried[i]); });
+    requestAnimationFrame(() => players.forEach(p => p.render()));
+  });
 }
 
 const themeSelect = document.getElementById('themeSelect');
