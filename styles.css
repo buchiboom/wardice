@@ -358,7 +358,7 @@ body {
 @keyframes swirl { to { transform: rotate(1turn); } }
 
 /* while rolling: hide the pips and show a spinning swirl instead */
-.die.tumble { animation: tumble .85s ease-in-out; }
+.die.tumble { animation: tumble var(--roll-ms, 850ms) ease-in-out; }
 .die.tumble .pip { opacity: 0; }
 .die.tumble::after {
   content: "";
@@ -368,7 +368,7 @@ body {
     transparent 0%, var(--die-pip) 18%, transparent 38%,
     transparent 50%, var(--die-pip) 68%, transparent 88%);
   opacity: .5;
-  animation: swirl .4s linear infinite;
+  animation: swirl var(--swirl-ms, 400ms) linear infinite;
 }
 
 /* ---------- side pool ---------- */

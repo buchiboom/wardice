@@ -13,7 +13,7 @@ const DIE_SIZES = [34, 30, 26, 22, 18, 14];  // shrink-to-fit ladder
 const DIE_MIN = 10;             // smallest die when squeezing an overflow row
 const GAP = 4;                  // matches .row-dice gap
 const POOL_DIE_PITCH = 28;      // .dice-strip die (24px) + its 4px gap
-const ROLL_ANIM_MS = 850;       // matches the .tumble swirl animation
+const SPEED_MS = { instant: 0, fast: 300, normal: 550, slow: 850 };  // roll animation length
 const COMPACT_H = 520;          // panel shorter than this uses compact controls
 const COMPACT_W = 330;          // panel narrower than this uses compact controls
 const WIDE_RATIO = 1.15;        // pbody wider than tall*this -> landscape layout
@@ -51,7 +51,7 @@ function rollD6(count) {
 /* ============================================================
    Settings
    ============================================================ */
-const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on', theme: 'default' };
+const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on', theme: 'default', speed: 'normal' };
 let settings = { ...DEFAULT_SETTINGS };
 try {
   settings = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem('wardice-settings') || '{}') };
@@ -141,6 +141,14 @@ function playRollSound() {
   const a = SFX_POOL[sfxIdx];
   sfxIdx = (sfxIdx + 1) % SFX_POOL.length;
   try { a.currentTime = 0; a.play().catch(() => {}); } catch {}
+}
+
+function rollMs() { return SPEED_MS[settings.speed] ?? SPEED_MS.normal; }
+
+function applySpeed() {
+  // drives the CSS animation length; halved for the inner swirl spin
+  document.documentElement.style.setProperty('--roll-ms', rollMs() + 'ms');
+  document.documentElement.style.setProperty('--swirl-ms', Math.max(120, rollMs() / 2) + 'ms');
 }
 
 async function applyOrientation() {
@@ -339,15 +347,22 @@ function createPlayer(root, name) {
 
   // target: 'all' to tumble every die, or an array of ids to tumble only those
   function animateRoll(target) {
+    const ms = rollMs();
+    playRollSound();
+    if (ms === 0) {            // instant: no swirl, just show the result
+      animSet = null;
+      state.rolling = false;
+      render();
+      return;
+    }
     state.rolling = true;
     animSet = target === 'all' ? 'all' : new Set(target);
-    playRollSound();
     render();
     setTimeout(() => {
       animSet = null;
       state.rolling = false;
       render();
-    }, ROLL_ANIM_MS);
+    }, ms);
   }
 
   function addToCup(n) {
@@ -589,6 +604,7 @@ settingsModal.addEventListener('click', e => {
   saveSettings();
   syncSettingsUI();
   if (key === 'orientation') applyOrientation();
+  else if (key === 'speed') applySpeed();
   else buildBoard();
 });
 
@@ -602,5 +618,6 @@ if ('serviceWorker' in navigator) {
 }
 
 applyTheme();
+applySpeed();
 buildBoard();
 applyOrientation();
