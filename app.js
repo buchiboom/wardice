@@ -6,7 +6,6 @@
    ============================================================ */
 
 const MAX_DICE = 1000;          // hard cap per cup
-const ROW_CAP = 12;             // max die glyphs per row: 6 wide x 2 lines
 const UNDO_DEPTH = 30;
 const DIE_SIZES = [34, 30, 26, 22, 18, 14];  // shrink-to-fit ladder
 const GAP = 4;                  // matches .row-dice gap
@@ -242,17 +241,17 @@ function createPlayer(root, name) {
     const measured = resultsEl.querySelector('.value-row:not(.empty) .row-dice')
       || resultsEl.querySelector('.row-dice');
     const rect = measured.getBoundingClientRect();
-    const capOf = s => {
-      const lines = Math.max(1, Math.floor((rect.height + GAP) / (s + GAP)));
-      const perLine = Math.max(1, Math.floor((rect.width + GAP) / (s + GAP)));
-      return lines * perLine;
-    };
-    let die = DIE_SIZES[DIE_SIZES.length - 1];
+    // a row always shows whole lines, two at most; the last tile is the
+    // "+N not shown" counter when a group overflows
+    const perLineOf = s => Math.max(1, Math.floor((rect.width + GAP) / (s + GAP)));
+    const linesOf = s => Math.max(1, Math.min(2, Math.floor((rect.height + GAP) / (s + GAP))));
+    const capOf = s => perLineOf(s) * linesOf(s);
+    let die = DIE_SIZES[0];           // big dice + "+N" tile when nothing fits all
     for (const s of DIE_SIZES) {
-      if (s <= rect.height && Math.min(maxGroup, ROW_CAP) <= capOf(s)) { die = s; break; }
+      if (s <= rect.height && maxGroup <= capOf(s)) { die = s; break; }
     }
     if (die > rect.height) die = Math.max(10, Math.floor(rect.height)); // ultra-short rows
-    const capacity = Math.min(ROW_CAP, capOf(die));
+    const capacity = capOf(die);
     resultsEl.style.setProperty('--die-size', die + 'px');
     // square action buttons: two of them split the row height
     const btn = Math.max(20, Math.min(48, Math.floor((rect.height - 4) / 2)));
