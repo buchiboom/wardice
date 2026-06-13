@@ -170,6 +170,7 @@ function createPlayer(root, name) {
   const resultsEl = q('.results');
   const totalEl = q('.ptotal');
   const undoBtn = q('.undo');
+  const cupEl = q('.cup-count b');
   const rollBtn = q('.roll-btn');
   const againBtn = q('.roll-again');
   const againCountEl = q('.roll-again small');
@@ -321,7 +322,8 @@ function createPlayer(root, name) {
       poolDiceEl.replaceChildren();
     }
 
-    // cup + buttons — the ROLL button shows how many dice are queued
+    // cup + buttons — the count box and ROLL both show how many dice are queued
+    cupEl.textContent = state.cup;
     rollBtn.textContent = state.cup > 0 ? `ROLL ${state.cup}` : 'ROLL';
     rollBtn.disabled = state.cup === 0 || state.rolling;
     againBtn.disabled = state.lastRollCount === 0 || state.rolling;
