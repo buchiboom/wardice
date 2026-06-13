@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE = 'wardice-v11';
+const CACHE = 'wardice-v12';
 const ASSETS = [
   './',
   './index.html',
@@ -13,7 +13,15 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // fetch with cache:'reload' so a new SW version never precaches stale
+  // copies out of the browser HTTP cache
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => Promise.all(ASSETS.map(u =>
+        fetch(u, { cache: 'reload' }).then(r => { if (r.ok) return c.put(u, r); })
+      )))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', e => {
@@ -27,6 +35,6 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    caches.match(e.request).then(hit => hit || fetch(e.request))
+    caches.match(e.request, { ignoreSearch: true }).then(hit => hit || fetch(e.request))
   );
 });

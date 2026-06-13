@@ -52,33 +52,33 @@ function saveSettings() {
    die/pip override the dice face when a faction calls for it
    ============================================================ */
 const THEMES = [
-  { id: 'default',     name: 'WarDice (Default)',    accent: '#c9a227', bg: '#0d0f12' },
-  { id: 'ultramar',    name: 'Ultramarines',         accent: '#4a7bd0', bg: '#090e1c' },
-  { id: 'bloodangels', name: 'Blood Angels',         accent: '#c43c3c', bg: '#160a0a' },
-  { id: 'darkangels',  name: 'Dark Angels',          accent: '#2a8a57', bg: '#07120c', die: '#ece5cb' },
-  { id: 'fists',       name: 'Imperial Fists',       accent: '#e8c11c', bg: '#14110a', pip: '#2b2410' },
-  { id: 'salamanders', name: 'Salamanders',          accent: '#34a853', bg: '#081207' },
-  { id: 'ravenguard',  name: 'Raven Guard',          accent: '#9aa3ad', bg: '#0a0a0c' },
-  { id: 'whitescars',  name: 'White Scars',          accent: '#e8e8e8', bg: '#101012', pip: '#a02020' },
-  { id: 'ironhands',   name: 'Iron Hands',           accent: '#8c9296', bg: '#0c0d0e', die: '#d7dade' },
-  { id: 'spacewolves', name: 'Space Wolves',         accent: '#7da0b8', bg: '#0d1318' },
-  { id: 'templars',    name: 'Black Templars',       accent: '#cfcfc6', bg: '#08080a', pip: '#8c1d1d' },
-  { id: 'greyknights', name: 'Grey Knights',         accent: '#aeb9c4', bg: '#0d1014', die: '#dde3e9' },
-  { id: 'deathwatch',  name: 'Deathwatch',           accent: '#b0b8c4', bg: '#09090b', pip: '#7a1f1f' },
-  { id: 'sororitas',   name: 'Adepta Sororitas',     accent: '#c02438', bg: '#0e0a0c', die: '#f2eee6' },
-  { id: 'militarum',   name: 'Astra Militarum',      accent: '#9aa050', bg: '#0e0f08', die: '#e3e0c4' },
-  { id: 'mechanicus',  name: 'Adeptus Mechanicus',   accent: '#c04a2e', bg: '#120b08', pip: '#3a241c' },
-  { id: 'custodes',    name: 'Adeptus Custodes',     accent: '#d4af37', bg: '#12100a' },
-  { id: 'blacklegion', name: 'Black Legion',         accent: '#b89b32', bg: '#0a090c' },
-  { id: 'deathguard',  name: 'Death Guard',          accent: '#8a9c45', bg: '#0e1009', die: '#dde0c0', pip: '#4a3a1f' },
-  { id: 'tsons',       name: 'Thousand Sons',        accent: '#2f8fc5', bg: '#081018', die: '#e9e2c8', pip: '#1c3a5e' },
-  { id: 'worldeaters', name: 'World Eaters',         accent: '#c03028', bg: '#120808', pip: '#5e1a14' },
-  { id: 'emperors',    name: "Emperor's Children",   accent: '#9b4fc0', bg: '#100818' },
-  { id: 'necrons',     name: 'Necrons',              accent: '#46d68a', bg: '#0a1210', die: '#c8d2cc', pip: '#0f3528' },
-  { id: 'orks',        name: 'Orks',                 accent: '#5fae35', bg: '#0c1208', die: '#e8e3c8', pip: '#20330f' },
-  { id: 'aeldari',     name: 'Aeldari',              accent: '#3fb5c4', bg: '#0a1216', die: '#e9e9e0' },
-  { id: 'tau',         name: "T'au Empire",          accent: '#d8a25a', bg: '#14100b', die: '#efe6d2' },
-  { id: 'tyranids',    name: 'Tyranids',             accent: '#b54a8f', bg: '#120a14', die: '#e8dcc8', pip: '#4a1f3a' },
+  { id: 'default',     name: 'Gold · WarDice',                 accent: '#c9a227', bg: '#0d0f12' },
+  { id: 'ultramar',    name: 'Blue · Ultramarines',            accent: '#4a7bd0', bg: '#090e1c' },
+  { id: 'bloodangels', name: 'Crimson · Blood Angels',         accent: '#c43c3c', bg: '#160a0a' },
+  { id: 'darkangels',  name: 'Forest Green · Dark Angels',     accent: '#2a8a57', bg: '#07120c', die: '#ece5cb' },
+  { id: 'fists',       name: 'Yellow · Imperial Fists',        accent: '#e8c11c', bg: '#14110a', pip: '#2b2410' },
+  { id: 'salamanders', name: 'Green · Salamanders',            accent: '#34a853', bg: '#081207' },
+  { id: 'ravenguard',  name: 'Slate Grey · Raven Guard',       accent: '#9aa3ad', bg: '#0a0a0c' },
+  { id: 'whitescars',  name: 'White · White Scars',            accent: '#e8e8e8', bg: '#101012', pip: '#a02020' },
+  { id: 'ironhands',   name: 'Gunmetal · Iron Hands',          accent: '#8c9296', bg: '#0c0d0e', die: '#d7dade' },
+  { id: 'spacewolves', name: 'Grey-Blue · Space Wolves',       accent: '#7da0b8', bg: '#0d1318' },
+  { id: 'templars',    name: 'Bone · Black Templars',          accent: '#cfcfc6', bg: '#08080a', pip: '#8c1d1d' },
+  { id: 'greyknights', name: 'Silver · Grey Knights',          accent: '#aeb9c4', bg: '#0d1014', die: '#dde3e9' },
+  { id: 'deathwatch',  name: 'Steel Red · Deathwatch',         accent: '#b0b8c4', bg: '#09090b', pip: '#7a1f1f' },
+  { id: 'sororitas',   name: 'Scarlet · Adepta Sororitas',     accent: '#c02438', bg: '#0e0a0c', die: '#f2eee6' },
+  { id: 'militarum',   name: 'Olive · Astra Militarum',        accent: '#9aa050', bg: '#0e0f08', die: '#e3e0c4' },
+  { id: 'mechanicus',  name: 'Rust Red · Adeptus Mechanicus',  accent: '#c04a2e', bg: '#120b08', pip: '#3a241c' },
+  { id: 'custodes',    name: 'Rich Gold · Adeptus Custodes',   accent: '#d4af37', bg: '#12100a' },
+  { id: 'blacklegion', name: 'Dark Gold · Black Legion',       accent: '#b89b32', bg: '#0a090c' },
+  { id: 'deathguard',  name: 'Sickly Green · Death Guard',     accent: '#8a9c45', bg: '#0e1009', die: '#dde0c0', pip: '#4a3a1f' },
+  { id: 'tsons',       name: 'Azure · Thousand Sons',          accent: '#2f8fc5', bg: '#081018', die: '#e9e2c8', pip: '#1c3a5e' },
+  { id: 'worldeaters', name: 'Blood Red · World Eaters',       accent: '#c03028', bg: '#120808', pip: '#5e1a14' },
+  { id: 'emperors',    name: "Purple · Emperor's Children",    accent: '#9b4fc0', bg: '#100818' },
+  { id: 'necrons',     name: 'Gauss Green · Necrons',          accent: '#46d68a', bg: '#0a1210', die: '#c8d2cc', pip: '#0f3528' },
+  { id: 'orks',        name: 'Bright Green · Orks',            accent: '#5fae35', bg: '#0c1208', die: '#e8e3c8', pip: '#20330f' },
+  { id: 'aeldari',     name: 'Teal · Aeldari',                 accent: '#3fb5c4', bg: '#0a1216', die: '#e9e9e0' },
+  { id: 'tau',         name: "Ochre · T'au Empire",            accent: '#d8a25a', bg: '#14100b', die: '#efe6d2' },
+  { id: 'tyranids',    name: 'Magenta · Tyranids',             accent: '#b54a8f', bg: '#120a14', die: '#e8dcc8', pip: '#4a1f3a' },
 ];
 
 // mix two hex colors: t=0 -> a, t=1 -> b
@@ -237,8 +237,11 @@ function createPlayer(root, name) {
       resultsEl.appendChild(row);
     }
 
-    // pass 2: measure, then pick the largest die size that fits every group
-    const rect = resultsEl.querySelector('.row-dice').getBoundingClientRect();
+    // pass 2: measure a row that actually has the action buttons, otherwise
+    // the wider empty-row dice area lies about the available space
+    const measured = resultsEl.querySelector('.value-row:not(.empty) .row-dice')
+      || resultsEl.querySelector('.row-dice');
+    const rect = measured.getBoundingClientRect();
     const capOf = s => {
       const lines = Math.max(1, Math.floor((rect.height + GAP) / (s + GAP)));
       const perLine = Math.max(1, Math.floor((rect.width + GAP) / (s + GAP)));
@@ -275,10 +278,23 @@ function createPlayer(root, name) {
       ? `RESULT <b>${state.dice.length}</b> DICE`
       : '';
 
-    // side pool
+    // side pool: max two clean lines, tail collapses into a "+N" tile
     poolSection.hidden = state.pool.length === 0;
     poolCountEl.textContent = state.pool.length;
-    poolDiceEl.replaceChildren(...state.pool.map(d => dieEl(d)));
+    if (state.pool.length > 0) {
+      const stripW = poolDiceEl.clientWidth || 300;
+      const poolCap = Math.max(1, Math.floor((stripW + 4) / 28)) * 2;
+      const shown = state.pool.slice(0, state.pool.length > poolCap ? poolCap - 1 : poolCap);
+      poolDiceEl.replaceChildren(...shown.map(d => dieEl(d)));
+      if (state.pool.length > shown.length) {
+        const more = document.createElement('div');
+        more.className = 'die overflow';
+        more.textContent = `+${state.pool.length - shown.length}`;
+        poolDiceEl.appendChild(more);
+      }
+    } else {
+      poolDiceEl.replaceChildren();
+    }
 
     // cup + buttons
     cupEl.textContent = state.cup;
@@ -354,7 +370,14 @@ function createPlayer(root, name) {
   root.querySelectorAll('.cup-btn').forEach(btn =>
     btn.addEventListener('click', () => addToCup(parseInt(btn.dataset.add, 10))));
 
-  q('.cup-clear').addEventListener('click', () => { state.cup = 0; render(); });
+  q('.cup-clear').addEventListener('click', () => {
+    if (state.cup === 0 && state.dice.length === 0) return;
+    pushUndo();
+    state.cup = 0;
+    state.dice = [];           // clear the table, not just the cup counter
+    state.selected.clear();
+    render();
+  });
   rollBtn.addEventListener('click', () => { if (state.cup > 0) doRoll(state.cup); });
   againBtn.addEventListener('click', () => { if (state.lastRollCount > 0) doRoll(state.lastRollCount); });
   undoBtn.addEventListener('click', undo);
@@ -390,7 +413,7 @@ function createPlayer(root, name) {
 
   poolDiceEl.addEventListener('click', e => {
     const die = e.target.closest('.die');
-    if (!die) return;
+    if (!die || die.classList.contains('overflow')) return;
     const id = parseInt(die.dataset.id, 10);
     const idx = state.pool.findIndex(d => d.id === id);
     if (idx >= 0) {
