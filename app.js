@@ -164,6 +164,7 @@ function createPlayer(root, name) {
     nextId: 1,
   };
   const undoStack = [];
+  let animSet = null;   // 'all' = animate every die · Set(ids) = only those · null = none
 
   const q = sel => root.querySelector(sel);
   const pbody = q('.pbody');
@@ -207,6 +208,7 @@ function createPlayer(root, name) {
     el.className = 'die';
     el.dataset.id = die.id;
     if (state.selected.has(die.id)) el.classList.add('selected');
+    if (animSet === 'all' || (animSet instanceof Set && animSet.has(die.id))) el.classList.add('tumble');
     for (const cell of PIP_CELLS[die.value]) {
       const pip = document.createElement('div');
       pip.className = 'pip';
@@ -335,13 +337,14 @@ function createPlayer(root, name) {
     selectCountEl.textContent = `${state.selected.size} SELECTED`;
   }
 
-  function animateRoll() {
+  // target: 'all' to tumble every die, or an array of ids to tumble only those
+  function animateRoll(target) {
     state.rolling = true;
+    animSet = target === 'all' ? 'all' : new Set(target);
     playRollSound();
     render();
-    resultsEl.classList.add('rolling');
     setTimeout(() => {
-      resultsEl.classList.remove('rolling');
+      animSet = null;
       state.rolling = false;
       render();
     }, ROLL_ANIM_MS);
@@ -358,7 +361,7 @@ function createPlayer(root, name) {
     state.lastRollCount = count;
     state.dice = makeDice(rollD6(count));
     state.cup = 0;
-    animateRoll();
+    animateRoll('all');
   }
 
   function rerollDice(ids) {
@@ -369,7 +372,7 @@ function createPlayer(root, name) {
     let i = 0;
     for (const d of state.dice) if (idSet.has(d.id)) d.value = values[i++];
     state.selected.clear();
-    animateRoll();
+    animateRoll(ids);
   }
 
   function deleteDice(ids) {
@@ -461,9 +464,10 @@ function createPlayer(root, name) {
     pushUndo();
     const values = rollD6(state.pool.length);
     state.pool.forEach((d, i) => { d.value = values[i]; });
+    const ids = state.pool.map(d => d.id);
     state.dice.push(...state.pool);   // rerolled dice return to the table
     state.pool = [];
-    animateRoll();
+    animateRoll(ids);                 // animate only the returned dice
   });
   q('.pool-return').addEventListener('click', () => {
     if (state.pool.length === 0) return;

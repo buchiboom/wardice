@@ -354,7 +354,7 @@ body {
   75%  { transform: rotate(270deg) scale(.9); }
   100% { transform: rotate(360deg) scale(1); }
 }
-.rolling .die { animation: tumble .42s linear; }
+.die.tumble { animation: tumble .42s linear; }
 
 /* ---------- side pool ---------- */
 .sidepool {
