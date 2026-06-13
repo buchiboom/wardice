@@ -456,6 +456,14 @@ function createPlayer(root, name) {
     }
   });
 
+  q('.pool-reroll').addEventListener('click', () => {
+    if (state.pool.length === 0) return;
+    pushUndo();
+    const values = rollD6(state.pool.length);
+    state.pool.forEach((d, i) => { d.value = values[i]; });
+    playRollSound();
+    render();
+  });
   q('.pool-return').addEventListener('click', () => {
     if (state.pool.length === 0) return;
     pushUndo();
