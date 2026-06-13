@@ -461,8 +461,9 @@ function createPlayer(root, name) {
     pushUndo();
     const values = rollD6(state.pool.length);
     state.pool.forEach((d, i) => { d.value = values[i]; });
-    playRollSound();
-    render();
+    state.dice.push(...state.pool);   // rerolled dice return to the table
+    state.pool = [];
+    animateRoll();
   });
   q('.pool-return').addEventListener('click', () => {
     if (state.pool.length === 0) return;
