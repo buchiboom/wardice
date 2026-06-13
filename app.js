@@ -355,13 +355,21 @@ function createPlayer(root, name) {
     render();
   }
 
-  function doRoll(count) {
+  // withPool: also re-roll the side-pool dice in place (AGAIN does, a fresh
+  // cup ROLL leaves the held pool untouched)
+  function doRoll(count, withPool) {
     pushUndo();
     state.selected.clear();
     state.lastRollCount = count;
     state.dice = makeDice(rollD6(count));
+    let target = state.dice.map(d => d.id);   // table dice always animate
+    if (withPool && state.pool.length) {
+      const pv = rollD6(state.pool.length);
+      state.pool.forEach((d, i) => { d.value = pv[i]; });
+      target = 'all';                          // include the pool in the swirl
+    }
     state.cup = 0;
-    animateRoll('all');
+    animateRoll(target);
   }
 
   function rerollDice(ids) {
@@ -413,8 +421,8 @@ function createPlayer(root, name) {
     state.selected.clear();
     render();
   });
-  rollBtn.addEventListener('click', () => { if (state.cup > 0) doRoll(state.cup); });
-  againBtn.addEventListener('click', () => { if (state.lastRollCount > 0) doRoll(state.lastRollCount); });
+  rollBtn.addEventListener('click', () => { if (state.cup > 0) doRoll(state.cup, false); });
+  againBtn.addEventListener('click', () => { if (state.lastRollCount > 0) doRoll(state.lastRollCount, true); });
   undoBtn.addEventListener('click', undo);
 
   resultsEl.addEventListener('click', e => {
