@@ -7,6 +7,7 @@
 
 const APP_VERSION = '1.0.0';
 const TIP_PRODUCT_ID = 'dicestorm_tip';   // matches the Play Console managed product
+const DONATION_ENABLED = false;           // flip to true once the Play product is live
 const MAX_DICE = 1000;          // hard cap per cup
 const ROW_CAP = 12;             // max die glyphs shown per row: 6 wide x 2 lines (11 dice + "+N")
 const ROW_COLS = 6;             // dice per line when a row overflows
@@ -690,8 +691,15 @@ function initBilling() {
     });
   } catch {}
 }
-document.addEventListener('deviceready', initBilling, { once: true });
-window.addEventListener('load', () => { if (window.CdvPurchase) initBilling(); });
+if (DONATION_ENABLED) {
+  document.addEventListener('deviceready', initBilling, { once: true });
+  window.addEventListener('load', () => { if (window.CdvPurchase) initBilling(); });
+} else {
+  // greyed-out placeholder until the Play in-app product is live
+  document.getElementById('supportSetting').hidden = false;
+  document.getElementById('tipBtn').disabled = true;
+  document.getElementById('tipNote').textContent = 'Tips are coming soon — thanks for considering it!';
+}
 
 /* ---------- PWA ---------- */
 if ('serviceWorker' in navigator) {

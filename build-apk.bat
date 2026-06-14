@@ -1,5 +1,5 @@
 @echo off
-REM Rebuild WarDice.apk after editing the web app. Run from this folder.
+REM Rebuild Dicestorm.apk (debug) after editing the web app. Run from this folder.
 setlocal
 set "JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.19.10-hotspot"
 set "ANDROID_HOME=C:\Android\sdk"
@@ -17,9 +17,9 @@ cd android
 call gradlew.bat assembleDebug --no-daemon || goto :err
 cd ..
 
-copy /Y "android\app\build\outputs\apk\debug\app-debug.apk" "WarDice.apk" >nul
+copy /Y "android\app\build\outputs\apk\debug\app-debug.apk" "Dicestorm.apk" >nul
 echo.
-echo DONE -> %~dp0WarDice.apk
+echo DONE -> %~dp0Dicestorm.apk
 goto :eof
 
 :err
