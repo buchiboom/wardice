@@ -58,7 +58,7 @@ function rollD6(count) {
 /* ============================================================
    Settings
    ============================================================ */
-const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on', theme: 'default', speed: 'normal', label: 'number' };
+const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on', theme: 'default', speed: 'normal', label: 'hidden' };
 let settings = { ...DEFAULT_SETTINGS };
 try {
   settings = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem('wardice-settings') || '{}') };
@@ -182,6 +182,7 @@ function createPlayer(root, name) {
     dice: [],          // { id, value }
     pool: [],          // { id, value }
     selected: new Set(),
+    poolSelected: new Set(),
     lastRollCount: 0,
     rolling: false,
     nextId: 1,
@@ -226,11 +227,11 @@ function createPlayer(root, name) {
     render();
   }
 
-  function dieEl(die) {
+  function dieEl(die, selSet = state.selected) {
     const el = document.createElement('div');
     el.className = 'die';
     el.dataset.id = die.id;
-    if (state.selected.has(die.id)) el.classList.add('selected');
+    if (selSet.has(die.id)) el.classList.add('selected');
     if (animSet === 'all' || (animSet instanceof Set && animSet.has(die.id))) el.classList.add('tumble');
     for (const cell of PIP_CELLS[die.value]) {
       const pip = document.createElement('div');
@@ -267,8 +268,10 @@ function createPlayer(root, name) {
       const face = settings.label === 'hidden' ? ''
         : settings.label === 'pips' ? `<div class="face-pips">${pipFace(v)}</div>`
         : `<div class="face-num">${v}</div>`;
-      label.innerHTML = face + `<div class="face-count">×${n}</div>`
-        + (n > 0 ? '<div class="pool-hint">POOL</div>' : '');
+      const poolHint = n > 0
+        ? '<div class="pool-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="4" x2="12" y2="18"/><polyline points="6 12 12 18 18 12"/></svg>POOL</div>'
+        : '';
+      label.innerHTML = face + `<div class="face-count">×${n}</div>` + poolHint;
       row.appendChild(label);
 
       const diceWrap = document.createElement('div');
@@ -344,8 +347,11 @@ function createPlayer(root, name) {
       const stripW = poolDiceEl.clientWidth || 300;
       const poolCap = Math.max(1, Math.floor((stripW + GAP) / POOL_DIE_PITCH)) * 2;
       const shown = state.pool.slice(0, state.pool.length > poolCap ? poolCap - 1 : poolCap);
-      poolDiceEl.replaceChildren(...shown.map(d => dieEl(d)));
+      poolDiceEl.replaceChildren(...shown.map(d => dieEl(d, state.poolSelected)));
       if (state.pool.length > shown.length) poolDiceEl.appendChild(overflowTile(state.pool.length - shown.length));
+      // REROLL acts on the selection if any, else the whole pool
+      const scope = root.querySelector('.reroll-scope');
+      if (scope) scope.textContent = state.poolSelected.size ? `(${state.poolSelected.size})` : '';
     } else {
       poolDiceEl.replaceChildren();
     }
@@ -487,40 +493,44 @@ function createPlayer(root, name) {
   q('.sel-delete').addEventListener('click', () => deleteDice([...state.selected]));
   q('.sel-cancel').addEventListener('click', () => { state.selected.clear(); render(); });
 
+  // tap a pooled die to (de)select it; REROLL then acts only on the selection
   poolDiceEl.addEventListener('click', e => {
     const die = e.target.closest('.die');
     if (!die || die.classList.contains('overflow')) return;
     const id = parseInt(die.dataset.id, 10);
-    const idx = state.pool.findIndex(d => d.id === id);
-    if (idx >= 0) {
-      pushUndo();
-      state.dice.push(state.pool[idx]);
-      state.pool.splice(idx, 1);
-      render();
-    }
+    state.poolSelected.has(id) ? state.poolSelected.delete(id) : state.poolSelected.add(id);
+    render();
   });
 
   q('.pool-reroll').addEventListener('click', () => {
     if (state.pool.length === 0) return;
+    // reroll the selected pooled dice, or all of them if none are selected
+    const idSet = state.poolSelected.size
+      ? new Set(state.poolSelected)
+      : new Set(state.pool.map(d => d.id));
+    const targets = state.pool.filter(d => idSet.has(d.id));
+    if (targets.length === 0) return;
     pushUndo();
-    const values = rollD6(state.pool.length);
-    state.pool.forEach((d, i) => { d.value = values[i]; });
-    const ids = state.pool.map(d => d.id);
-    state.dice.push(...state.pool);   // rerolled dice return to the table
-    state.pool = [];
-    animateRoll(ids);                 // animate only the returned dice
+    const values = rollD6(targets.length);
+    targets.forEach((d, i) => { d.value = values[i]; });
+    state.dice.push(...targets);                          // rerolled dice return to the table
+    state.pool = state.pool.filter(d => !idSet.has(d.id));
+    state.poolSelected.clear();
+    animateRoll([...idSet]);                              // animate only the returned dice
   });
   q('.pool-return').addEventListener('click', () => {
     if (state.pool.length === 0) return;
     pushUndo();
     state.dice.push(...state.pool);
     state.pool = [];
+    state.poolSelected.clear();
     render();
   });
   q('.pool-clear').addEventListener('click', () => {
     if (state.pool.length === 0) return;
     pushUndo();
     state.pool = [];
+    state.poolSelected.clear();
     render();
   });
 

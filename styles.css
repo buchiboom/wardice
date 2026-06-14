@@ -268,11 +268,16 @@ body {
 .value-row:not(.empty) .row-label:active { background: var(--line); }
 .value-row.empty .row-label { cursor: default; background: transparent; }
 .pool-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 1px;
   color: #9ecbff;
 }
+.pool-hint svg { width: 11px; height: 11px; }
 .row-label .face-num {
   font-size: 18px;
   font-weight: 800;
@@ -405,7 +410,6 @@ body {
   margin-bottom: 4px;
 }
 .sidepool-head b { color: #fff; font-size: 12px; }
-.sidepool-actions { display: flex; gap: 6px; }
 .dice-strip {
   --die-size: 24px;
   display: flex;
@@ -414,6 +418,14 @@ body {
   max-height: 56px;
   overflow-y: auto;
 }
+.sidepool-foot {
+  display: flex;
+  gap: 8px;
+  margin-top: 5px;
+}
+.sidepool-foot .pool-return { margin-right: auto; }   /* RETURN pinned left */
+.sidepool-foot .pool-reroll { margin-left: auto; color: #ffd866; }  /* REROLL pinned right */
+.reroll-scope { color: #fff; }
 
 /* ---------- selection bar ---------- */
 .select-bar {
