@@ -442,6 +442,10 @@ body {
 
 /* ---------- buttons ---------- */
 .mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   background: var(--panel2);
   color: var(--text);
   border: 1px solid var(--line);
@@ -452,6 +456,7 @@ body {
   padding: 6px 9px;
   cursor: pointer;
 }
+.mini-btn svg { width: 13px; height: 13px; flex: 0 0 auto; }
 .mini-btn:active { background: var(--line); }
 .mini-btn:disabled { opacity: .35; cursor: default; }
 .mini-btn.danger { color: #ff9c9c; border-color: #5a2727; }
