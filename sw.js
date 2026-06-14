@@ -4,13 +4,14 @@
 // release: the new SW precaches fresh copies (bypassing the HTTP cache via
 // cache:'reload'), drops old caches on activate, and the page auto-reloads.
 // No per-asset ?v= query strings to keep in sync.
-const CACHE = 'wardice-v31';
+const CACHE = 'dicestorm-v32';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './manifest.webmanifest',
+  './privacy.html',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './sounds/roll.mp3',

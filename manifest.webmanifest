@@ -1,6 +1,6 @@
 {
-  "name": "WarDice — Battle Dice Roller",
-  "short_name": "WarDice",
+  "name": "Dicestorm — Battle Dice Roller",
+  "short_name": "Dicestorm",
   "description": "Fast D6 battle dice roller for tabletop wargames",
   "start_url": "./",
   "scope": "./",

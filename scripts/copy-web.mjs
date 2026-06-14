@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const www = resolve(root, 'www');
 
-const FILES = ['index.html', 'app.js', 'styles.css', 'manifest.webmanifest', 'sw.js'];
+const FILES = ['index.html', 'app.js', 'styles.css', 'manifest.webmanifest', 'sw.js', 'privacy.html'];
 const DIRS = ['icons', 'sounds'];
 
 await rm(www, { recursive: true, force: true });

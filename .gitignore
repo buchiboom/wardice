@@ -9,4 +9,9 @@ android/app/build/
 android/capacitor-cordova-android-plugins/
 android/local.properties
 *.apk
+*.aab
+# release signing — keep these secret and backed up, never commit
+android/keystore.properties
+*.jks
+*.keystore
 .DS_Store

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">WarDice</string>
-    <string name="title_activity_main">WarDice</string>
-    <string name="package_name">com.wardice.app</string>
-    <string name="custom_url_scheme">com.wardice.app</string>
+    <string name="app_name">Dicestorm</string>
+    <string name="title_activity_main">Dicestorm</string>
+    <string name="package_name">com.dicestorm.app</string>
+    <string name="custom_url_scheme">com.dicestorm.app</string>
 </resources>

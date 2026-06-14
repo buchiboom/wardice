@@ -5,6 +5,8 @@
    Multi-instance: one roller per player panel (1-4 players).
    ============================================================ */
 
+const APP_VERSION = '1.0.0';
+const TIP_PRODUCT_ID = 'dicestorm_tip';   // matches the Play Console managed product
 const MAX_DICE = 1000;          // hard cap per cup
 const ROW_CAP = 12;             // max die glyphs shown per row: 6 wide x 2 lines (11 dice + "+N")
 const ROW_COLS = 6;             // dice per line when a row overflows
@@ -647,6 +649,49 @@ settingsModal.addEventListener('click', e => {
   else if (key === 'label') players.forEach(p => p.render());
   else buildBoard();
 });
+
+/* ============================================================
+   About + in-app donation (single tip via Google Play Billing)
+   ============================================================ */
+document.getElementById('appVersion').textContent = 'v' + APP_VERSION;
+document.getElementById('licensesToggle').addEventListener('click', () => {
+  const box = document.getElementById('licensesBox');
+  box.hidden = !box.hidden;
+});
+
+// Billing only exists in the packaged app (cordova-plugin-purchase exposes the
+// global CdvPurchase). On web/PWA the SUPPORT section stays hidden.
+let billingInit = false;
+function initBilling() {
+  if (billingInit || !window.CdvPurchase) return;
+  billingInit = true;
+  const { store, ProductType, Platform } = window.CdvPurchase;
+  const support = document.getElementById('supportSetting');
+  const tipBtn = document.getElementById('tipBtn');
+  const tipNote = document.getElementById('tipNote');
+  const GP = Platform.GOOGLE_PLAY;
+  try {
+    store.register([{ id: TIP_PRODUCT_ID, type: ProductType.CONSUMABLE, platform: GP }]);
+    store.when().approved(t => t.verify());
+    store.when().verified(r => r.finish());
+    store.when().finished(() => { tipNote.textContent = 'Thank you for the support! ♥'; });
+    store.error(() => {});
+    store.initialize([GP]).then(() => {
+      support.hidden = false;
+      const p = store.get(TIP_PRODUCT_ID, GP);
+      const price = p?.pricing?.price || p?.offers?.[0]?.pricingPhases?.[0]?.price;
+      if (price) tipBtn.textContent = `♥ LEAVE A TIP (${price})`;
+    }).catch(() => {});
+    tipBtn.addEventListener('click', () => {
+      const offer = store.get(TIP_PRODUCT_ID, GP)?.getOffer();
+      if (!offer) return;
+      tipBtn.disabled = true;
+      Promise.resolve(offer.order()).finally(() => { tipBtn.disabled = false; });
+    });
+  } catch {}
+}
+document.addEventListener('deviceready', initBilling, { once: true });
+window.addEventListener('load', () => { if (window.CdvPurchase) initBilling(); });
 
 /* ---------- PWA ---------- */
 if ('serviceWorker' in navigator) {

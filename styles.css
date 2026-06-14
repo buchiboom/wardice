@@ -647,6 +647,24 @@ body {
   line-height: 1.4;
   color: var(--muted);
 }
+.tip-btn {
+  height: 42px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--accent-text, #1a1505);
+  background: linear-gradient(180deg, var(--accent-grad-a, #e0b62e), var(--accent-grad-b, #a9871c));
+  border: 1px solid var(--accent-edge, #5e4b10);
+  border-radius: 9px;
+  cursor: pointer;
+}
+.tip-btn:active { transform: translateY(1px); }
+.tip-btn:disabled { opacity: .6; cursor: default; }
+.about-line { margin: 0; font-size: 11px; line-height: 1.5; color: var(--muted); }
+.about-line b { color: var(--text); }
+.licenses { font-size: 10px; line-height: 1.5; color: var(--muted); }
+.licenses ul { margin: 4px 0; padding-left: 16px; }
+.licenses a { color: var(--gold); }
 .seg { display: flex; gap: 5px; }
 .seg button {
   flex: 1;

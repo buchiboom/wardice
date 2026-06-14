@@ -7,7 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>WarDice — Battle Dice Roller</title>
+  <title>Dicestorm — Battle Dice Roller</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -18,7 +18,7 @@
     <button class="gear-btn" id="settingsBtn" aria-label="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
-    <h1>WAR<span>DICE</span></h1>
+    <h1>DICE<span>STORM</span></h1>
     <div class="spacer"></div>
     <div class="status-slot" id="statusSlot"></div>
   </header>
@@ -130,6 +130,30 @@
         </div>
       </div>
       <p class="hint">Orientation lock applies in the installed app. Tablet mode splits the screen into 2–4 boards — players across the table get a flipped board facing them.</p>
+
+      <div class="setting" id="supportSetting" hidden>
+        <label>SUPPORT DICESTORM</label>
+        <button class="tip-btn" id="tipBtn">♥ LEAVE A TIP</button>
+        <p class="sub-hint" id="tipNote">Dicestorm is free with no ads. A tip is a one-time thank-you — totally optional.</p>
+      </div>
+
+      <div class="setting">
+        <label>ABOUT</label>
+        <p class="about-line">Dicestorm <b id="appVersion"></b> — a fast D6 battle dice roller for tabletop wargames.</p>
+        <button class="mini-btn" id="licensesToggle">LICENSES &amp; PRIVACY</button>
+        <div class="licenses" id="licensesBox" hidden>
+          <p>© 2026 Boom. Released under the MIT License.</p>
+          <p>Third-party components:</p>
+          <ul>
+            <li>Capacitor — MIT License</li>
+            <li>cordova-plugin-purchase — MIT License</li>
+            <li>@capacitor/screen-orientation — MIT License</li>
+            <li>Dice-roll sound — generated with ludo.ai</li>
+          </ul>
+          <p><a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a> · purchases are processed by Google Play.</p>
+        </div>
+      </div>
+
       <button class="modal-done" id="settingsClose">DONE</button>
     </div>
   </div>

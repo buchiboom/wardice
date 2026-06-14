@@ -1,4 +1,4 @@
-package com.wardice.app;
+package com.dicestorm.app;
 
 import com.getcapacitor.BridgeActivity;
 
