@@ -1,1 +1,12 @@
 .claude/
+
+# Capacitor / Android build
+node_modules/
+www/
+android/.gradle/
+android/build/
+android/app/build/
+android/capacitor-cordova-android-plugins/
+android/local.properties
+*.apk
+.DS_Store

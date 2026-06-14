@@ -1,0 +1,17 @@
+{
+  "name": "wardice",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WarDice — Warhammer 40k battle dice roller (Capacitor wrapper)",
+  "scripts": {
+    "copy-web": "node scripts/copy-web.mjs",
+    "sync": "npm run copy-web && cap sync android"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  }
+}
