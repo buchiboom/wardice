@@ -1,7 +1,7 @@
 {
   "name": "WarDice — Battle Dice Roller",
   "short_name": "WarDice",
-  "description": "Minimal RollHammer-style D6 dice roller for Warhammer 40k",
+  "description": "Fast D6 battle dice roller for tabletop wargames",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

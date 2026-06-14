@@ -26,6 +26,14 @@ const PIP_CELLS = {             // 3x3 grid cells (1-9) used per face value
   6: [1, 3, 4, 6, 7, 9],
 };
 
+// single source for the inline icon SVGs used across rows, pool and select bar
+const ICONS = {
+  reroll: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>',
+  remove: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>',
+  up:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="5"/><polyline points="6 11 12 5 18 11"/></svg>',
+  down:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="4" x2="12" y2="18"/><polyline points="6 12 12 18 18 12"/></svg>',
+};
+
 // face value shown in a row label as a mini pip die (gold dots)
 function pipFace(v) {
   return PIP_CELLS[v].map(cell =>
@@ -207,6 +215,9 @@ function createPlayer(root, name) {
 
   q('.pname').textContent = name;
 
+  // fill static buttons (pool + select bar) with their icons from the one map
+  root.querySelectorAll('[data-icon]').forEach(el => el.insertAdjacentHTML('afterbegin', ICONS[el.dataset.icon]));
+
   const makeDice = values => values.map(v => ({ id: state.nextId++, value: v }));
 
   function pushUndo() {
@@ -224,6 +235,7 @@ function createPlayer(root, name) {
     state.cup = s.cup;
     state.lastRollCount = s.lastRollCount;
     state.selected.clear();
+    state.poolSelected.clear();   // dropped dice may no longer be in the pool
     render();
   }
 
@@ -268,9 +280,7 @@ function createPlayer(root, name) {
       const face = settings.label === 'hidden' ? ''
         : settings.label === 'pips' ? `<div class="face-pips">${pipFace(v)}</div>`
         : `<div class="face-num">${v}</div>`;
-      const poolHint = n > 0
-        ? '<div class="pool-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="4" x2="12" y2="18"/><polyline points="6 12 12 18 18 12"/></svg>POOL</div>'
-        : '';
+      const poolHint = n > 0 ? `<div class="pool-hint">${ICONS.down}POOL</div>` : '';
       label.innerHTML = face + `<div class="face-count">×${n}</div>` + poolHint;
       row.appendChild(label);
 
@@ -283,12 +293,8 @@ function createPlayer(root, name) {
         const actions = document.createElement('div');
         actions.className = 'row-actions';
         actions.innerHTML = `
-          <button class="row-btn reroll" data-act="reroll" title="Re-roll all ${v}s">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
-            REROLL</button>
-          <button class="row-btn del" data-act="del" title="Remove all ${v}s">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>
-            REMOVE</button>`;
+          <button class="row-btn reroll" data-act="reroll" title="Re-roll all ${v}s">${ICONS.reroll}REROLL</button>
+          <button class="row-btn del" data-act="del" title="Remove all ${v}s">${ICONS.remove}REMOVE</button>`;
         row.appendChild(actions);
       }
       resultsEl.appendChild(row);
@@ -349,24 +355,25 @@ function createPlayer(root, name) {
       const shown = state.pool.slice(0, state.pool.length > poolCap ? poolCap - 1 : poolCap);
       poolDiceEl.replaceChildren(...shown.map(d => dieEl(d, state.poolSelected)));
       if (state.pool.length > shown.length) poolDiceEl.appendChild(overflowTile(state.pool.length - shown.length));
-      // REROLL acts on the selection if any, else the whole pool
-      const scope = root.querySelector('.reroll-scope');
-      if (scope) scope.textContent = state.poolSelected.size ? `(${state.poolSelected.size})` : '';
     } else {
       poolDiceEl.replaceChildren();
     }
 
-    // cup + buttons — the count box and ROLL both show how many dice are queued
+    renderControls();
+  }
+
+  // light update for cup / button states / selection — no full board rebuild
+  function renderControls() {
     cupEl.textContent = state.cup;
     rollBtn.textContent = state.cup > 0 ? `ROLL ${state.cup}` : 'ROLL';
     rollBtn.disabled = state.cup === 0 || state.rolling;
     againBtn.disabled = state.lastRollCount === 0 || state.rolling;
     againCountEl.textContent = state.lastRollCount > 0 ? `×${state.lastRollCount}` : '';
     undoBtn.disabled = undoStack.length === 0 || state.rolling;
-
-    // selection bar
     selectBar.hidden = state.selected.size === 0;
     selectCountEl.textContent = `${state.selected.size} SELECTED`;
+    const scope = root.querySelector('.reroll-scope');   // REROLL acts on selection if any
+    if (scope) scope.textContent = state.poolSelected.size ? `(${state.poolSelected.size})` : '';
   }
 
   // target: 'all' to tumble every die, or an array of ids to tumble only those
@@ -391,7 +398,7 @@ function createPlayer(root, name) {
 
   function addToCup(n) {
     state.cup = Math.min(MAX_DICE, Math.max(0, state.cup + n));
-    render();
+    renderControls();
   }
 
   // withPool: also re-roll the side-pool dice in place (AGAIN does, a fresh
@@ -405,6 +412,7 @@ function createPlayer(root, name) {
     if (withPool && state.pool.length) {
       const pv = rollD6(state.pool.length);
       state.pool.forEach((d, i) => { d.value = pv[i]; });
+      state.poolSelected.clear();              // values changed; drop stale selection
       target = 'all';                          // include the pool in the swirl
     }
     state.cup = 0;
@@ -483,8 +491,9 @@ function createPlayer(root, name) {
     const die = e.target.closest('.die');
     if (die && !die.classList.contains('overflow')) {
       const id = parseInt(die.dataset.id, 10);
-      state.selected.has(id) ? state.selected.delete(id) : state.selected.add(id);
-      render();
+      if (state.selected.has(id)) { state.selected.delete(id); die.classList.remove('selected'); }
+      else { state.selected.add(id); die.classList.add('selected'); }
+      renderControls();   // just the select bar — no board rebuild
     }
   });
 
@@ -495,15 +504,17 @@ function createPlayer(root, name) {
 
   // tap a pooled die to (de)select it; REROLL then acts only on the selection
   poolDiceEl.addEventListener('click', e => {
+    if (state.rolling) return;
     const die = e.target.closest('.die');
     if (!die || die.classList.contains('overflow')) return;
     const id = parseInt(die.dataset.id, 10);
-    state.poolSelected.has(id) ? state.poolSelected.delete(id) : state.poolSelected.add(id);
-    render();
+    if (state.poolSelected.has(id)) { state.poolSelected.delete(id); die.classList.remove('selected'); }
+    else { state.poolSelected.add(id); die.classList.add('selected'); }
+    renderControls();   // just the REROLL (N) badge — no board rebuild
   });
 
   q('.pool-reroll').addEventListener('click', () => {
-    if (state.pool.length === 0) return;
+    if (state.pool.length === 0 || state.rolling) return;
     // reroll the selected pooled dice, or all of them if none are selected
     const idSet = state.poolSelected.size
       ? new Set(state.poolSelected)
@@ -519,7 +530,7 @@ function createPlayer(root, name) {
     animateRoll([...idSet]);                              // animate only the returned dice
   });
   q('.pool-return').addEventListener('click', () => {
-    if (state.pool.length === 0) return;
+    if (state.pool.length === 0 || state.rolling) return;
     pushUndo();
     state.dice.push(...state.pool);
     state.pool = [];
@@ -527,7 +538,7 @@ function createPlayer(root, name) {
     render();
   });
   q('.pool-clear').addEventListener('click', () => {
-    if (state.pool.length === 0) return;
+    if (state.pool.length === 0 || state.rolling) return;
     pushUndo();
     state.pool = [];
     state.poolSelected.clear();
