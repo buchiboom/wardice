@@ -26,6 +26,13 @@ const PIP_CELLS = {             // 3x3 grid cells (1-9) used per face value
   6: [1, 3, 4, 6, 7, 9],
 };
 
+// face value shown in a row label as a mini pip die (gold dots)
+function pipFace(v) {
+  return PIP_CELLS[v].map(cell =>
+    `<i class="lpip" style="grid-area:${Math.ceil(cell / 3)}/${((cell - 1) % 3) + 1}"></i>`
+  ).join('');
+}
+
 // the "+N not shown" tile, shared by the value rows and the side pool
 function overflowTile(n) {
   const el = document.createElement('div');
@@ -51,7 +58,7 @@ function rollD6(count) {
 /* ============================================================
    Settings
    ============================================================ */
-const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on', theme: 'default', speed: 'normal' };
+const DEFAULT_SETTINGS = { orientation: 'portrait', tablet: 'off', players: '2', sound: 'on', theme: 'default', speed: 'normal', label: 'number' };
 let settings = { ...DEFAULT_SETTINGS };
 try {
   settings = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem('wardice-settings') || '{}') };
@@ -257,7 +264,10 @@ function createPlayer(root, name) {
       const label = document.createElement('div');
       label.className = 'row-label';
       label.title = `Move all ${v}s to side pool`;
-      label.innerHTML = `<div class="face-num">${v}</div><div class="face-count">×${n}</div>`
+      const face = settings.label === 'hidden' ? ''
+        : settings.label === 'pips' ? `<div class="face-pips">${pipFace(v)}</div>`
+        : `<div class="face-num">${v}</div>`;
+      label.innerHTML = face + `<div class="face-count">×${n}</div>`
         + (n > 0 ? '<div class="pool-hint">POOL</div>' : '');
       row.appendChild(label);
 
@@ -613,6 +623,7 @@ settingsModal.addEventListener('click', e => {
   syncSettingsUI();
   if (key === 'orientation') applyOrientation();
   else if (key === 'speed') applySpeed();
+  else if (key === 'label') players.forEach(p => p.render());
   else buildBoard();
 });
 

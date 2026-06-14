@@ -285,6 +285,23 @@ body {
   color: #ffffff;
   line-height: 1.1;
 }
+.row-label .face-pips {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 3px;
+}
+.row-label .face-pips .lpip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  place-self: center;
+}
+.player.compact .row-label .face-pips { width: 20px; height: 20px; padding: 2px; }
+.player.compact .row-label .face-pips .lpip { width: 4px; height: 4px; }
 .value-row.empty .face-count { color: var(--muted); }
 
 .row-dice {

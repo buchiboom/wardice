@@ -9,8 +9,8 @@ cd /d "%~dp0"
 echo == Assembling web assets into www\ ==
 call node scripts\copy-web.mjs || goto :err
 
-echo == Copying web assets into the Android project ==
-call npx cap copy android || goto :err
+echo == Syncing web assets + plugins into the Android project ==
+call npx cap sync android || goto :err
 
 echo == Building debug APK ==
 cd android
