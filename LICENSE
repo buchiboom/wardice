@@ -25,5 +25,4 @@ SOFTWARE.
 Third-party components:
 - Capacitor (@capacitor/core, @capacitor/android) — MIT License
 - @capacitor/screen-orientation — MIT License
-- cordova-plugin-purchase — MIT License
 - Dice-roll sound effect — generated with ludo.ai
